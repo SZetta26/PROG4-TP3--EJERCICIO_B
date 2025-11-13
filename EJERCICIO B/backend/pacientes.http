@@ -1,0 +1,51 @@
+@baseUrl = http://localhost:3000/api/pacientes
+@pacienteId = 4
+
+### INICIAR SESIÓN Y OBTENER TOKEN (POST /api/auth/login)
+# @name login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "pedro12@email.com",
+    "contrasena": "pedro123"
+}
+
+### CAPTURA DE VARIABLES GLOBALES
+@token = {{login.response.body.token}}
+
+### POST: Crear un nuevo paciente
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "dni": "12345678",
+    "fecha_nacimiento": "1990-05-15",
+    "obra_social": "OSDE"
+}
+
+### GET: Obtener todos los pacientes
+GET {{baseUrl}}
+
+### GET: Obtener paciente por ID
+GET {{baseUrl}}/{{pacienteId}}
+
+### PUT: Actualizar un paciente
+PUT {{baseUrl}}/{{pacienteId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Juan Carlos",
+    "apellido": "Pérez Modificado",
+    "dni": "12345678",
+    "fecha_nacimiento": "1990-05-15",
+    "obra_social": "Swiss Medical"
+}
+
+### DELETE: Eliminar paciente 
+DELETE {{baseUrl}}/{{pacienteId}}
+Authorization: Bearer {{token}}
