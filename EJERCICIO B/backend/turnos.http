@@ -1,0 +1,36 @@
+@baseUrl = http://localhost:3000/api/turnos
+@turnoId = 2
+
+### POST: Crear un nuevo turno
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "paciente_id": "1",
+    "medico_id": "1",
+    "fecha": "2025-11-20",
+    "hora": "14:30",
+    "observaciones": "Consulta de rutina"
+}
+
+### GET: Obtener todos los turnos
+GET {{baseUrl}}
+
+### 🟢 GET: Obtener turno por ID GET
+ {{baseUrl}}/{{turnoId}}
+
+### 🟢 PUT: Actualizar un turno 
+PUT {{baseUrl}}/{{turnoId}}
+Content-Type: application/json
+
+{
+    "paciente_id": 1,
+    "medico_id": 2,
+    "fecha": "2025-11-20",
+    "hora": "15:00",
+    "estado": "finalizado",
+    "observaciones": "Paciente atendido"
+}
+
+### DELETE: Eliminar turno
+DELETE {{baseUrl}}/{{turnoId}}

@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:3000/api/medicos
+@medicoId = 2
+
+### POST: Crear un nuevo médico
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "nombre": "Ana",
+    "apellido": "Gómez",
+    "especialidad": "Cardiología",
+    "matricula_profesional": "MP-12345"
+}
+
+### GET: Obtener todos los médicos
+GET {{baseUrl}}
+
+### GET: Obtener médico por ID 
+GET {{baseUrl}}/{{medicoId}}
+
+### PUT: Actualizar un médico
+PUT {{baseUrl}}/{{medicoId}}
+Content-Type: application/json
+
+{
+    "nombre": "Ana Laura",
+    "apellido": "Gómez Modificada",
+    "especialidad": "Cardiología",
+    "matricula_profesional": "MP-12345"
+}
+
+### DELETE: Eliminar médico
+DELETE {{baseUrl}}/{{medicoId}}

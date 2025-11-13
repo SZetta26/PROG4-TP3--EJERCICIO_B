@@ -1,0 +1,26 @@
+@url = http://localhost:3000/api
+
+### 1. REGISTRAR NUEVO USUARIO (POST /api/auth/register)
+# @name register
+POST {{url}}/auth/register
+Content-Type: application/json
+
+{
+    "nombre": "Pedro Canale",
+    "email": "pedro12@email.com",
+    "contrasena": "pedro123"
+}
+
+### 2. INICIAR SESIÓN Y OBTENER TOKEN (POST /api/auth/login)
+# @name login
+POST {{url}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "pedro12@email.com",
+    "contrasena": "pedro123"
+}
+
+### 3. CAPTURA DE VARIABLES GLOBALES
+@token = {{login.response.body.token}}
+@userId = {{login.response.body.user.id}}

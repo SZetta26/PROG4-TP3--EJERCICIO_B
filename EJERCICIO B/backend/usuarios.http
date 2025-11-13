@@ -1,0 +1,38 @@
+@url = http://localhost:3000/api
+
+### INICIAR SESIÓN Y OBTENER TOKEN
+# @name login
+POST {{url}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "pedro12@email.com",
+    "contrasena": "pedro123"
+}
+
+### CAPTURA DE VARIABLES GLOBALES
+@token = {{login.response.body.token}}
+@userId = {{login.response.body.user.id}} 
+
+### OBTENER TODOS LOS USUARIOS
+GET {{url}}/usuarios
+Authorization: Bearer {{token}}
+
+### OBTENER UN USUARIO POR ID
+GET {{url}}/usuarios/{{userId}}
+Authorization: Bearer {{token}}
+
+### MODIFICAR UN USUARIO 
+PUT {{url}}/usuarios/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Usuario Modificado",
+    "email": "modificado@example.com",
+    "contrasena": "NuevaClave123"
+}
+
+###ELIMINAR UN USUARIO POR ID
+DELETE {{url}}/usuarios/{{userId}}
+Authorization: Bearer {{token}}
