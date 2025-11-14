@@ -24,7 +24,7 @@ app.use('/api/medicos', medicosRouter);
 app.use('/api/turnos', turnosRouter);
 
 app.get('/', (req, res) => {
-    res.status(200).json({ message: 'API de Gestión Hospitalaria operativa.' });
+    res.status(200).json({ message: 'Corriendo sistema de gestion de clinicas.' });
 });
 
 app.get('/api/protegida', protegerRuta, (req, res) => {

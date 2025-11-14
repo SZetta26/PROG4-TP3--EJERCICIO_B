@@ -33,6 +33,8 @@ router.get('/', async (req, res, next) => {
                 t.hora, 
                 t.estado, 
                 t.observaciones,
+                t.paciente_id,
+                t.medico_id,
                 p.nombre AS paciente_nombre,
                 p.apellido AS paciente_apellido,
                 m.nombre AS medico_nombre,
@@ -61,6 +63,8 @@ router.get('/:id', validarId, async (req, res, next) => {
                 t.hora, 
                 t.estado, 
                 t.observaciones,
+                t.paciente_id,
+                t.medico_id,
                 p.nombre AS paciente_nombre,
                 p.apellido AS paciente_apellido,
                 m.nombre AS medico_nombre,
@@ -102,6 +106,44 @@ router.put('/:id', protegerRuta, validarId, validarTurno, async (req, res, next)
             next(error);
         }
     });
+
+router.patch('/:id', protegerRuta, validarId, async (req, res, next) => {
+    const { id } = req.params;
+    const { observaciones, estado } = req.body;
+
+    const fields = [];
+    const values = [];
+
+    if (observaciones === undefined && estado === undefined) {
+        return res.status(400).json({ success: false, message: 'Se requiere al menos el campo "observaciones" o "estado" para la actualización parcial.' });
+    }
+    
+    if (observaciones !== undefined) {
+        fields.push("observaciones = ?");
+        values.push(observaciones);
+    }
+    if (estado !== undefined) {
+        fields.push("estado = ?");
+        values.push(estado);
+    }
+    
+    const sql = `UPDATE turnos SET ${fields.join(', ')} WHERE id = ?`;
+    values.push(id);
+
+    try {
+        const db = getDb();
+        const [result] = await db.execute(sql, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Turno no encontrado para actualizar parcialmente' });
+        }
+        res.status(200).json({ success: true, message: 'Turno actualizado parcialmente exitosamente' });
+
+    } catch (error) {
+        console.error("Error al actualizar turno con PATCH:", error);
+        next(error);
+    }
+});
 
 router.delete('/:id', protegerRuta, validarId, async (req, res, next) => {
     const { id } = req.params;
