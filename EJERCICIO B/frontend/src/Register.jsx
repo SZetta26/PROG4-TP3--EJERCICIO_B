@@ -78,7 +78,7 @@ const Register = ({ setCurrentPage }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="nombre" className="block text-gray-700 text-sm font-medium mb-1">
-              Nombre
+              Username
             </label>
             <input
               id="nombre"

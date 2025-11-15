@@ -15,8 +15,17 @@ const verificarValidaciones = (req, res, next) => {
 const validarUsuario = [
   body('nombre')
     .isAlphanumeric('es-ES').withMessage('El nombre debe ser alfanumérico')
-    .isLength({ max: 20 }).withMessage('El nombre no puede superar los 20 caracteres')
-    .trim(),
+    .isLength({ min: 3, max: 15 }).withMessage('El nombre de usuario debe tener entre 3 y 15 caracteres')
+    .trim()
+    .custom(async (value, { req }) => {
+      const db = getDb();
+      const id = req.params.id ? Number(req.params.id) : undefined;
+      const [rows] = await db.execute('SELECT id FROM usuarios WHERE nombre = ?', [value]);
+      if (rows.length > 0 && (!id || Number(rows[0].id) !== id)) {
+        throw new Error('El nombre de usuario ya está en uso.');
+      }
+      return true;
+    }),
 
   body('email')
     .isEmail().withMessage('Email inválido')
@@ -35,11 +44,11 @@ const validarUsuario = [
   body('contrasena')
     .isStrongPassword({
       minLength: 8,
-      minLowercase: 1,
-      minUppercase: 0,
+      minLowercase: 0,
+      minUppercase: 1,
       minNumbers: 1,
       minSymbols: 0,
-    }).withMessage('La contraseña debe tener al menos 8 caracteres, una minúscula y un número'),
+    }).withMessage('La contraseña debe tener al menos 8 caracteres, una mayúscula y un número!'),
 
   verificarValidaciones
 ];
