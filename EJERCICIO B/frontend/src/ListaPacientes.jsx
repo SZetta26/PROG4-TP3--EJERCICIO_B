@@ -315,7 +315,7 @@ const ListaPacientes = () => {
                                             {`${paciente.nombre} ${paciente.apellido}`}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{paciente.dni}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{paciente.fecha_nacimiento}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{new Date(paciente.fecha_nacimiento).toLocaleDateString('es-AR')}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{paciente.obra_social}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button 

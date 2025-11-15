@@ -521,8 +521,14 @@ const ListaTurnos = () => {
                                 {turnos.map((turno) => (
                                     <tr key={turno.id} className="hover:bg-gray-50 transition duration-150">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            <div className="flex items-center text-xs text-gray-500"><Calendar className="w-3 h-3 mr-1" />{turno.fecha}</div>
-                                            <div className="flex items-center text-sm text-indigo-600 font-bold"><Clock className="w-3 h-3 mr-1" />{turno.hora}</div>
+                                            <div className="flex items-center text-xs text-gray-500">
+                                                <Calendar className="w-3 h-3 mr-1" />
+                                                {new Date(turno.fecha).toLocaleDateString('es-AR')}
+                                            </div>
+                                            <div className="flex items-center text-sm text-indigo-600 font-bold">
+                                                <Clock className="w-3 h-3 mr-1" />
+                                                {turno.hora?.substring(0, 5)}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                             {turno.paciente_nombre && turno.paciente_apellido 
