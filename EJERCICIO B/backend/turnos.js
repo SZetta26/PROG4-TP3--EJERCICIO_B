@@ -24,28 +24,48 @@ router.post('/', protegerRuta, validarTurno, async (req, res, next) => {
 });
 
 router.get('/', async (req, res, next) => {
+    const { paciente_id, medico_id } = req.query;
     try {
         const db = getDb();
-        const query = `
-            SELECT 
-                t.id, 
-                t.fecha, 
-                t.hora, 
-                t.estado, 
-                t.observaciones,
-                t.paciente_id,
-                t.medico_id,
-                p.nombre AS paciente_nombre,
-                p.apellido AS paciente_apellido,
-                m.nombre AS medico_nombre,
-                m.apellido AS medico_apellido,
-                m.especialidad AS medico_especialidad
-            FROM turnos t
-            JOIN pacientes p ON t.paciente_id = p.id
-            JOIN medicos m ON t.medico_id = m.id
-            ORDER BY t.fecha DESC, t.hora ASC
+        let query = `
+        SELECT 
+            t.id, 
+            t.fecha, 
+            t.hora, 
+            t.estado, 
+            t.observaciones,
+            t.paciente_id,
+            t.medico_id,
+            p.nombre AS paciente_nombre,
+            p.apellido AS paciente_apellido,
+            m.nombre AS medico_nombre,
+            m.apellido AS medico_apellido,
+            m.especialidad AS medico_especialidad
+        FROM turnos t
+        JOIN pacientes p ON t.paciente_id = p.id
+        JOIN medicos m ON t.medico_id = m.id
         `;
-        const [rows] = await db.execute(query);
+    
+        const conditions = [];
+        const params = [];
+
+        if (paciente_id) {
+        conditions.push('t.paciente_id = ?');
+        params.push(paciente_id);
+        }
+
+        if (medico_id) {
+        conditions.push('t.medico_id = ?');
+        params.push(medico_id);
+        }
+
+        if (conditions.length > 0) {
+        query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        query += ' ORDER BY t.fecha DESC, t.hora ASC';
+
+        const [rows] = await db.execute(query, params);
         res.status(200).json({ success: true, data: rows });
     } catch (error) {
         next(error);

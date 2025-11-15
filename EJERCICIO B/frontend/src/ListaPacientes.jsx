@@ -125,32 +125,41 @@ const ListaPacientes = () => {
     };
 
     const handleDelete = async () => {
-        const id = confirmModal.pacienteId;
-        
+    const id = confirmModal.pacienteId;
+
         setConfirmModal({ visible: false, pacienteId: null, pacienteNombre: '' });
         setLoading(true);
         setError(null);
 
-        try {
-            const response = await fetchAuth(`${BASE_URL}/api/pacientes/${id}`, {
-                method: 'DELETE',
-            });
+    try {
+        const turnosRes = await fetchAuth(`${BASE_URL}/api/turnos?paciente_id=${id}`);
+        const turnosData = await turnosRes.json();
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || `Error al eliminar paciente: ${response.status}`);
-            }
-
-            await fetchPacientes();
-
-        } catch (err) {
-            console.error("Delete Error:", err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
+        if (turnosRes.ok && Array.isArray(turnosData.data) && turnosData.data.length > 0) {
+        setError(`No se puede eliminar al paciente porque tiene turno(s) asignado(s).`);
+        return;
         }
+
+        const response = await fetchAuth(`${BASE_URL}/api/pacientes/${id}`, {
+        method: 'DELETE',
+    });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Error al eliminar paciente: ${response.status}`);
+    }
+
+        await fetchPacientes();
+
+    } catch (err) {
+        console.error("Delete Error:", err);
+        setError(err.message);
+    } finally {
+        setLoading(false);
+    }
     };
-    
+
+
     const formatLabel = (key) => {
         switch (key) {
             case 'nombre':
