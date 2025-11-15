@@ -9,6 +9,8 @@ const Register = ({ setCurrentPage }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState([]);
+  const [generalError, setGeneralError] = useState('');
 
   const { register, error: authError, setError } = useAuth();
 
@@ -17,6 +19,8 @@ const Register = ({ setCurrentPage }) => {
     setIsSubmitting(true);
     setMessage('');
     setRegisterSuccess(false);
+    setValidationErrors([]);
+    setGeneralError('');
     if (setError) setError(null);
 
     const userData = {
@@ -35,7 +39,11 @@ const Register = ({ setCurrentPage }) => {
         setCurrentPage('login');
       }, 1500);
     } else {
-      setMessage(result.error || 'Error en el registro. Inténtalo de nuevo.');
+      if (Array.isArray(result.errors)) {
+        setValidationErrors(result.errors);
+      } else {
+        setGeneralError(result.error || 'Error en el registro. Inténtalo de nuevo.');
+      }
     }
   };
 
@@ -47,10 +55,18 @@ const Register = ({ setCurrentPage }) => {
         </div>
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Registro de Usuario</h2>
 
-        {(authError || (!registerSuccess && message)) && (
+        {generalError && (
           <div className="mb-4 p-3 rounded-lg text-sm bg-red-100 border-red-400 text-red-700">
-            {authError || message}
+            {generalError}
           </div>
+        )}
+
+        {validationErrors.length > 0 && (
+          <ul className="mb-4 p-3 rounded-lg text-sm bg-red-100 border-red-400 text-red-700 list-disc list-inside">
+            {validationErrors.map((err, index) => (
+              <li key={index}>{err.msg}</li>
+            ))}
+          </ul>
         )}
 
         {registerSuccess && (
@@ -72,6 +88,8 @@ const Register = ({ setCurrentPage }) => {
                 setNombre(e.target.value);
                 if (setError) setError(null);
                 setMessage('');
+                setValidationErrors([]);
+                setGeneralError('');
               }}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
@@ -90,6 +108,8 @@ const Register = ({ setCurrentPage }) => {
                 setEmail(e.target.value);
                 if (setError) setError(null);
                 setMessage('');
+                setValidationErrors([]);
+                setGeneralError('');
               }}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"
@@ -106,8 +126,10 @@ const Register = ({ setCurrentPage }) => {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                if (setError) setError(null); 
+                if (setError) setError(null);
                 setMessage('');
+                setValidationErrors([]);
+                setGeneralError('');
               }}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500"

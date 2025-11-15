@@ -8,6 +8,7 @@ const Login = ({ setCurrentPage }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState([]);
 
   const { login, error: authError, isAuthenticated, setError } = useAuth();
 
@@ -27,6 +28,7 @@ const Login = ({ setCurrentPage }) => {
     setIsSubmitting(true);
     setMessage('');
     setLoginSuccess(false);
+    setValidationErrors([]);
     if (setError) setError(null);
 
     const userData = {
@@ -41,10 +43,14 @@ const Login = ({ setCurrentPage }) => {
       setLoginSuccess(true);
       setMessage('Inicio de sesión exitoso. Redirigiendo...');
       setTimeout(() => {
-        setCurrentPage('home'); 
+        setCurrentPage('home');
       }, 1500);
     } else {
-      setMessage(result?.error || 'Error desconocido. Revisa los datos ingresados.');
+      if (Array.isArray(result.errors)) {
+        setValidationErrors(result.errors);
+      } else {
+        setMessage(result?.error || 'Error desconocido. Revisa los datos ingresados.');
+      }
     }
   };
 
@@ -55,6 +61,14 @@ const Login = ({ setCurrentPage }) => {
           <LogIn className="w-8 h-8 text-indigo-600" />
         </div>
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Iniciar Sesión</h2>
+
+        {validationErrors.length > 0 && (
+          <ul className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm list-disc list-inside">
+            {validationErrors.map((err, index) => (
+              <li key={index}>{err.msg}</li>
+            ))}
+          </ul>
+        )}
 
         {(authError || (!loginSuccess && message)) && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
@@ -79,8 +93,9 @@ const Login = ({ setCurrentPage }) => {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                if (setError) setError(null); 
+                if (setError) setError(null);
                 setMessage('');
+                setValidationErrors([]);
               }}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
@@ -99,6 +114,7 @@ const Login = ({ setCurrentPage }) => {
                 setPassword(e.target.value);
                 if (setError) setError(null);
                 setMessage('');
+                setValidationErrors([]);
               }}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"

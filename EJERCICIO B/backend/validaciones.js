@@ -13,6 +13,11 @@ const verificarValidaciones = (req, res, next) => {
 };
 
 const validarUsuario = [
+  body('nombre')
+    .isAlphanumeric('es-ES').withMessage('El nombre debe ser alfanumérico')
+    .isLength({ max: 20 }).withMessage('El nombre no puede superar los 20 caracteres')
+    .trim(),
+
   body('email')
     .isEmail().withMessage('Email inválido')
     .normalizeEmail()
@@ -26,6 +31,29 @@ const validarUsuario = [
       }
       return true;
     }),
+
+  body('contrasena')
+    .isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 0,
+      minNumbers: 1,
+      minSymbols: 0,
+    }).withMessage('La contraseña debe tener al menos 8 caracteres, una minúscula y un número'),
+
+  verificarValidaciones
+];
+
+const validarLogin = [
+  body('email')
+    .isEmail().withMessage('Email inválido')
+    .normalizeEmail()
+    .trim(),
+
+  body('contrasena')
+    .isString().withMessage('Ingresá una contraseña válida')
+    .isLength({ min: 1 }).withMessage('La contraseña es obligatoria'),
+
   verificarValidaciones
 ];
 
@@ -74,6 +102,7 @@ const validarTurno = [
       }
       return true;
     }),
+
   body('medico_id')
     .isInt({ gt: 0 }).withMessage('medico_id debe ser un entero positivo')
     .toInt()
@@ -85,6 +114,7 @@ const validarTurno = [
       }
       return true;
     }),
+
   verificarValidaciones
 ];
 
@@ -95,6 +125,7 @@ const validarId = [
 
 export {
   validarUsuario,
+  validarLogin,
   validarPaciente,
   validarMedico,
   validarTurno,

@@ -75,19 +75,24 @@ export const AuthProvider = ({ children }) => {
       const responseData = await response.json();
 
       if (!response.ok) {
+        if (Array.isArray(responseData.errors)) {
+          return { success: false, errors: responseData.errors };
+        }
+
         const errorMessage = responseData.message || `Error del servidor (${response.status}).`;
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }
 
       return { success: true };
-
-    } catch (err) {
+      } catch (err) {
       const networkError = 'Error de conexión con el servidor.';
       setError(networkError);
       return { success: false, error: networkError };
     }
-  };
+};
+
+
 
   const fetchAuth = (url, options = {}) => {
     const token = localStorage.getItem('authToken');

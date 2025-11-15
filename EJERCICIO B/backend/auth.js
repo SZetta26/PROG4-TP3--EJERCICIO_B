@@ -4,7 +4,8 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { getDb } from './db.js';
-import { validarUsuario } from './validaciones.js'; 
+import { validarUsuario } from './validaciones.js';
+import { validarLogin } from './validaciones.js';
 export const SALTROUNDS = 12; 
 
 const JWT_SECRET = process.env.JWT_SECRET; 
@@ -12,7 +13,7 @@ const router = express.Router();
 
 export const authConfig = () => {
     if (!JWT_SECRET) {
-        console.error("ERROR: JWT_SECRET no está definido. Revisa tu archivo .env.");
+        console.error("ERROR: JWT_SECRET no está definido.");
     }
 
     const opts = {
@@ -58,7 +59,7 @@ router.post('/register', validarUsuario, async (req, res, next) => {
 
         res.status(201).json({
             success: true,
-            message: 'Usuario registrado exitosamente. Token generado.',
+            message: 'Usuario registrado exitosamente.',
             user: { id: result.insertId, nombre, email },
             token: token
         });
@@ -70,11 +71,11 @@ router.post('/register', validarUsuario, async (req, res, next) => {
     }
 });
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', validarLogin, async (req, res, next) => {
     const { email, contrasena } = req.body;
 
     if (!email || !contrasena) {
-        return res.status(400).json({ success: false, message: 'Faltan credenciales de inicio de sesión' });
+        return res.status(400).json({ success: false, message: 'Faltan datos de inicio de sesión' });
     }
 
     try {
@@ -83,13 +84,13 @@ router.post('/login', async (req, res, next) => {
         const user = rows[0];
 
         if (!user) {
-            return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+            return res.status(401).json({ success: false, message: 'Email incorrecto!' });
         }
 
         const isMatch = await bcrypt.compare(contrasena, user.contrasena);
 
         if (!isMatch) {
-            return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+            return res.status(401).json({ success: false, message: 'Contraseña incorrecta!' });
         }
 
         const token = jwt.sign(
